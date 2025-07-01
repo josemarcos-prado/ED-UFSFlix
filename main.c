@@ -9,11 +9,13 @@ Sophia Damm Zogaib Mardones
 #include "funcoes.h"
 
 int main(){
+    limparTela();
     int op;
     tipoLista lista;
     inicializa(&lista);
     do{
-        printf("\n      Menu UFSflix");
+        //limparTela();
+        printf("\n--------------\n Menu UFSflix\n--------------");
         printf("\n0 - Finalizar");
         printf("\n1 - Cadastrar Genero");
         printf("\n2 - Mostrar lista de generos cadastrados");
@@ -38,15 +40,19 @@ int main(){
             break;
         case 5: pesquisaFilme(&lista);
             break;
-        case 6: exibirFilmesPorGenero(&lista);
+        case 6: 
+            limparTela();
+            exibirFilmesPorGenero(&lista);
+            pausar();
             break;
         case 0: 
             freeMultilista(&lista);
             break;
         default:
-            printf("Comando não reconhecido");
+            printf("Comando nao reconhecido");
         }
-     printf("\n\n\n\n");
+        pausar();
+        
     }while(op != 0);
     return 0;
 }

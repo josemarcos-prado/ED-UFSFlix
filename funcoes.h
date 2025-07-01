@@ -32,17 +32,39 @@ typedef struct tipoLista{
     tipoGenero *fim;
 }tipoLista;
 
+void limparTela();
+void pausar();
 void limpaBuffer();
+void limpaBufferInteligente(char* string);
 void inicializa(tipoLista *lista);
 void cadastrarGenero(tipoLista *lista);
 void generosCadastrados(tipoLista *lista);
 tipoGenero* pesquisaGenero(tipoLista *lista);
 void cadastrarFilme(tipoLista *lista);
+void exibirTodosFilmes(tipoLista *lista);
 void exibirFilmesPorGenero(tipoLista *lista);
 void removerFilme(tipoLista *lista);
 void pesquisaFilme(tipoLista *lista);
-void exibirFilme(tipoFilme* filme);
+void exibirFilme(tipoFilme *filme);
 void freeMultilista(tipoLista *lista);
+
+void limparTela() {
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
+void pausar() {
+    #ifdef _WIN32
+        system("pause");
+    #else
+        printf("Pressione ENTER para continuar...");
+        getchar();
+        printf("\n");
+    #endif
+}
 
 void limpaBuffer(){
     int c;
@@ -69,15 +91,15 @@ Funções para gêneros
 */
 void cadastrarGenero (tipoLista *lista) {
     tipoGenero *novoGenero = (tipoGenero*) malloc(sizeof(tipoGenero));
-    if (novoGenero == NULL){
+    if (!novoGenero){ //Verifica se a memória foi alocada
         printf("Infelizmente, seu genero nao foi alocado de forma adequada. :(\n");
         return;
     }  
-    printf("Digite o nome do genero:\n");
+    printf("Digite o nome do genero: \n");
     fgets(novoGenero->nomeGenero,sizeof(novoGenero->nomeGenero),stdin);
     limpaBufferInteligente(novoGenero->nomeGenero);
     
-    printf("Digite o descricao do genero:\n");
+    printf("Digite o descricao do genero: \n");
     fgets(novoGenero->descricao,sizeof(novoGenero->descricao),stdin);
     limpaBufferInteligente(novoGenero->descricao);
     
@@ -117,7 +139,7 @@ tipoGenero* pesquisaGenero(tipoLista *lista){
     generosCadastrados(lista);
     char nomeG[50];
 
-    printf("Digite um genero: ");
+    printf("Digite um genero: \n");
     fgets(nomeG,sizeof(nomeG),stdin);
     limpaBufferInteligente(nomeG);
 
@@ -137,40 +159,58 @@ void cadastrarFilme(tipoLista *lista){
     tipoGenero* genero = pesquisaGenero(lista);
 
     if(!genero){
-        printf("Genero não encontrado!\n");
+        printf("Genero nao encontrado!\n");
         return;
     }
     
     tipoFilme *novoFilme = (tipoFilme*) malloc(sizeof(tipoFilme));
-    if (novoFilme == NULL){
+    if (!novoFilme){ //Verifica se a memória foi alocada
         printf("Infelizmente, seu filme nao foi alocado de forma adequada. :(\n");
     }  
 
-    printf("Digite o nome do filme:\n");
+    printf("Digite o nome do filme: \n");
     fgets(novoFilme->nomeFilme,sizeof(novoFilme->nomeFilme),stdin);
     limpaBufferInteligente(novoFilme->nomeFilme);
 
-    printf("Digite a descricao do filme:\n");
+    printf("Digite a descricao do filme: \n");
     fgets(novoFilme->sinopse,sizeof(novoFilme->sinopse),stdin);
     limpaBufferInteligente(novoFilme->sinopse);
 
-    printf("Digite a duracao do filme em minutos:\n");
+    printf("Digite a duracao do filme em minutos: \n");
     scanf("%d", &novoFilme->duracao);
     getchar();
 
-    printf("Digite o ano de lancamento do filme:\n");
+    printf("Digite o ano de lancamento do filme: \n");
     scanf("%d", &novoFilme->lancamento);
     getchar();
 
     genero->quantFilmes++;
-    if(genero->fim == NULL){
+    if(!genero->fim){
         genero->fim = novoFilme;
         novoFilme->prox = novoFilme;
-        return ;
+        return;
     } 
-    novoFilme->prox = genero->fim;
-    genero->fim->prox = novoFilme;
+    tipoFilme* aux = genero->fim;                                                                
+    novoFilme->prox = aux->prox;
+    aux->prox = novoFilme;
     genero->fim = novoFilme;
+}
+
+void exibirTodosFilmes(tipoLista *lista){
+    tipoGenero *atualG = lista->inicio;
+    tipoFilme *atualF;
+    int cont = 1;
+    for(int i = 0; i<lista->qntd; i++){
+        if(!atualG->fim) continue;
+        atualF = atualG->fim;
+        for(int j = 0; j<atualG->quantFilmes; j++){
+            printf("%d - %s \n", cont++, atualF->nomeFilme);
+            atualF = atualF->prox;
+        }
+        atualG = atualG->prox;
+    }
+
+    if(cont == 1) printf("Lista Vazia \n");
 }
 
 void exibirFilmesPorGenero(tipoLista *lista){
@@ -197,9 +237,11 @@ void exibirFilmesPorGenero(tipoLista *lista){
 }
 
 void removerFilme(tipoLista *lista){
-
+    printf("Filmes no Catalogo: \n");
+    exibirTodosFilmes(lista);
+    
     char nomeBusca[50];
-    printf("Digite o nome do filme:");
+    printf("Digite o nome do filme: ");
     fgets(nomeBusca,sizeof(nomeBusca),stdin);
     limpaBufferInteligente(nomeBusca);
 
@@ -208,6 +250,7 @@ void removerFilme(tipoLista *lista){
     int achou = 0;
 
     for(int i = 0; i<lista->qntd; i++){
+        if(!atualG->fim) continue;
         atualF = atualG->fim;
         for(int j = 0; j<atualG->quantFilmes; j++){
             if(strcmp(atualF->prox->nomeFilme, nomeBusca) == 0 ){
@@ -247,7 +290,7 @@ void pesquisaFilme(tipoLista *lista){
         printf("Lista Vazia, filme nao encontrado");
         return;
     }
-    printf("Digite o nome do filme(exatamente igual):");
+    printf("Digite o nome do filme (exatamente igual): ");
     fgets(nomeBusca,sizeof(nomeBusca),stdin);
     limpaBufferInteligente(nomeBusca);
     
@@ -266,12 +309,12 @@ void pesquisaFilme(tipoLista *lista){
         atualGenero = atualGenero->prox;
     }
     if(!achou) {
-        printf("Não achou o filme %s", nomeBusca);
+        printf("Nao achou o filme %s", nomeBusca);
     }
 }
 
 void exibirFilme(tipoFilme* filme){
-    printf("====================\nNome: %s\nSinopse: %s\nDuracao: %d minutos\nAno de lancamento: %d\n====================", filme->nomeFilme, filme->sinopse, filme->duracao, filme->lancamento);
+    printf("====================\nNome: %s\nSinopse: %s\nDuracao: %d minutos\nAno de lancamento: %d\n====================\n", filme->nomeFilme, filme->sinopse, filme->duracao, filme->lancamento);
 }
 
 void freeMultilista(tipoLista *lista){
