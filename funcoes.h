@@ -86,9 +86,7 @@ void inicializa(tipoLista *lista){
     lista->qntd = 0;
 }
 
-/*
-Funções para gêneros 
-*/
+/* Funções para gêneros */
 void cadastrarGenero (tipoLista *lista) {
     tipoGenero *novoGenero = (tipoGenero*) malloc(sizeof(tipoGenero));
     if (!novoGenero){ //Verifica se a memória foi alocada
@@ -112,13 +110,13 @@ void cadastrarGenero (tipoLista *lista) {
         novoGenero->ant = NULL;
         lista->inicio = novoGenero;
         lista->fim = novoGenero;
+        printf("Genero inserido! \n");
         return;
     }
     novoGenero->prox = lista->inicio;
     lista->inicio->ant = novoGenero;
     novoGenero->ant = NULL;
     lista->inicio = novoGenero;
-
     printf("Genero inserido! \n");
 }
 
@@ -152,9 +150,7 @@ tipoGenero* pesquisaGenero(tipoLista *lista){
     return NULL;
 }
 
-/*
-Funções para filmes
-*/
+/* Funções para filmes*/
 void cadastrarFilme(tipoLista *lista){
     tipoGenero* genero = pesquisaGenero(lista);
 
@@ -166,6 +162,7 @@ void cadastrarFilme(tipoLista *lista){
     tipoFilme *novoFilme = (tipoFilme*) malloc(sizeof(tipoFilme));
     if (!novoFilme){ //Verifica se a memória foi alocada
         printf("Infelizmente, seu filme nao foi alocado de forma adequada. :(\n");
+        return;
     }  
 
     printf("Digite o nome do filme: \n");
@@ -197,11 +194,11 @@ void cadastrarFilme(tipoLista *lista){
 }
 
 void exibirTodosFilmes(tipoLista *lista){
+    printf("Filmes no Catalogo: \n");
     tipoGenero *atualG = lista->inicio;
     tipoFilme *atualF;
     int cont = 1;
     for(int i = 0; i<lista->qntd; i++){
-        if(!atualG->fim) continue;
         atualF = atualG->fim;
         for(int j = 0; j<atualG->quantFilmes; j++){
             printf("%d - %s \n", cont++, atualF->nomeFilme);
@@ -214,74 +211,98 @@ void exibirTodosFilmes(tipoLista *lista){
 }
 
 void exibirFilmesPorGenero(tipoLista *lista){
-    tipoGenero* trg = pesquisaGenero(lista);
+    tipoGenero* genero = pesquisaGenero(lista);
 
-    if(!trg){
+    if(!genero){
         printf("Genero nao encontrado \n");
         return;
     }
 
-    if(trg->fim == NULL){
+    if(genero->fim == NULL){
         printf("Nenhum filme cadastrado neste genero. \n");
         return;
     }
     
-    tipoFilme* atual = trg->fim;
+    tipoFilme* atual = genero->fim->prox;
     
-    printf("\nFilmes cadastrados do Genero %s: \n", trg->nomeGenero);
+    printf("\nFilmes cadastrados do Genero %s: \n", genero->nomeGenero);
     do{
-        atual = atual->prox;
         exibirFilme(atual);
-    }while(atual != trg->fim);
+        atual = atual->prox;
+    }while(atual != genero->fim->prox);
     printf("\n");
 }
 
+/* 
+ * Função: removerFilme
+ * Objetivo: Remove um filme do catálogo, buscando pelo nome informado.
+ * Parâmetros:
+ *   - lista: no cabeça para a lista de gêneros, cada gênero contém uma lista de filmes.
+ */
 void removerFilme(tipoLista *lista){
-    printf("Filmes no Catalogo: \n");
+    // Exibe os filmes disponíveis no catálogo
     exibirTodosFilmes(lista);
-    
+
+    // Lê o nome do filme a ser removido
     char nomeBusca[50];
     printf("Digite o nome do filme: ");
     fgets(nomeBusca,sizeof(nomeBusca),stdin);
     limpaBufferInteligente(nomeBusca);
 
-    tipoGenero *atualG = lista->inicio;
-    tipoFilme *atualF;
-    int achou = 0;
+    // Ponteiros para percorrer os gêneros e filmes
+    tipoGenero  *atualG = lista->inicio; 
+    tipoFilme   *atualF; 
+    int         achou = 0;
 
-    for(int i = 0; i<lista->qntd; i++){
-        if(!atualG->fim) continue;
+    // Percorre cada gênero na lista
+    for(int i = 0; i<lista->qntd; i++){ 
+
+        // Começa pelo último filme cadastrado (lista circular)
         atualF = atualG->fim;
+
+         /* Percorre todos os filmes do gênero atual (atualG)
+          * Note que se o gênero estiver vazio, atualF = NULL,
+          * porém, nesse caso atualG->quantFilmes é igual a 0 e o for não será executado e não haverá falha de segmentação */
         for(int j = 0; j<atualG->quantFilmes; j++){
+            //Comparamos o nome do autalF->prox com o nome que buscamos
             if(strcmp(atualF->prox->nomeFilme, nomeBusca) == 0 ){
                 achou = 1;
-                break;
+                break; 
             }
             atualF = atualF->prox;
         }
+        // Se encontrou, interrompe a busca
         if(achou) {
-            printf("Filme removido\n");            
+            printf("Filme removido com sucesso!\n");            
             break;
         }
         atualG = atualG->prox;
     }
 
+     // Caso o filme não tenha sido encontrado durante a busca
     if(!achou){
         printf("Filme nao encontrado\n");
         return;
     }
 
-    tipoFilme *trg = atualF->prox;          
-    tipoFilme *next = trg->prox;
-    atualF->prox = next;
+    // Ponteiro para o filme a ser removido (atualF->prox)
+    tipoFilme *alvo = atualF->prox; 
+
+    // Remove o alvo da lista encadeada
+    atualF->prox = alvo->prox;
     
-    if(trg == next){
+    // Ajusta o ponteiro 'fim' do gênero, se necessário
+    if(alvo == alvo->prox){ 
+        // Era o único filme no gênero
         atualG->fim = NULL;
-    }else if(trg == atualG->fim) {
+    }else if(alvo == atualG->fim) {
+        // Se removemos o último filme, atualizamos 'fim' para atualF
         atualG->fim = atualF;
     }
+    
     atualG->quantFilmes--;
-    free(trg);
+     // Libera a memória do filme removido
+    free(alvo);
 }
 
 void pesquisaFilme(tipoLista *lista){
@@ -290,6 +311,7 @@ void pesquisaFilme(tipoLista *lista){
         printf("Lista Vazia, filme nao encontrado");
         return;
     }
+    exibirTodosFilmes(lista);
     printf("Digite o nome do filme (exatamente igual): ");
     fgets(nomeBusca,sizeof(nomeBusca),stdin);
     limpaBufferInteligente(nomeBusca);

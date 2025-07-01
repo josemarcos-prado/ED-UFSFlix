@@ -41,15 +41,13 @@ int main(){
         case 5: pesquisaFilme(&lista);
             break;
         case 6: 
-            limparTela();
             exibirFilmesPorGenero(&lista);
-            pausar();
             break;
         case 0: 
             freeMultilista(&lista);
             break;
         default:
-            printf("Comando nao reconhecido");
+            printf("Comando nao reconhecido\n");
         }
         pausar();
         
