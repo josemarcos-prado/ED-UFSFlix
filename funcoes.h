@@ -2,7 +2,7 @@
 Bruno Carvalho Santana Rocha
 Danilo Campos Deichmann
 Filipe Ciríaco Marcelino do Nascimento 
-José Marcos Bittencourt Oliveira Prado
+Jose Marcos Bittencourt Oliveira Prado
 Sophia Damm Zogaib Mardones
 */
 
@@ -19,7 +19,7 @@ typedef struct filme {
     struct filme *prox; 
 } tipoFilme;
 
-//Tipo que define um no de lista duplamente encadeada (lista de generos) e nó cabeça de lista circular (lista de filmes)
+//Tipo que define um no de lista duplamente encadeada (lista de generos) e no cabeça de lista circular (lista de filmes)
 typedef struct genero{
     tipoFilme *fim;
     char nomeGenero[50];
@@ -35,6 +35,7 @@ typedef struct tipoLista{
     tipoGenero *fim;
 }tipoLista;
 
+//Prototipos das funcoes:
 void limparTela();
 void pausar();
 void limpaBuffer();
@@ -51,6 +52,7 @@ void pesquisaFilme(tipoLista *lista);
 void exibirFilme(tipoFilme *filme);
 void freeMultilista(tipoLista *lista);
 
+//Funcao para limpar o terminal
 void limparTela() {
     #ifdef _WIN32
         system("cls");
@@ -59,6 +61,7 @@ void limparTela() {
     #endif
 }
 
+//Funcao para pausar a execucao do programa
 void pausar() {
     #ifdef _WIN32
         system("pause");
@@ -69,32 +72,33 @@ void pausar() {
     #endif
 }
 
-//Função que limpa o buffer
+//Funcao que limpa o buffer
 void limpaBuffer(){
     int c;
     while(((c = getchar()) != '\n') && (c != EOF));
 }
 
-//Função que limpa: o buffer ou a formatação da string que foi recebida por um fgets
+//Funcao que limpa: o buffer ou a formatacao da string que foi recebida por um fgets
 void limpaBufferInteligente(char* string) {
     //Se '\n' for encontrado na string, limpa a string
     int i;
     if ((i = strcspn(string, "\n")) < strlen(string)){ 
         string[i] = '\0';
     } 
-    //Se não, há lixo no buffer, que é removido pela função limpaBuffer()
+    //Se nao, ha lixo no buffer, que a funcao limpaBuffer() remove
     else { 
         limpaBuffer();
     }
 }
 
+//Funcao para inicializar cada campo do no cabeça da multilita
 void inicializa(tipoLista *lista){
     lista->fim = NULL;
     lista->inicio = NULL;
     lista->qntd = 0;
 }
 
-/* Funções para generos */
+/* Funcoes para generos */
 void cadastrarGenero (tipoLista *lista) {
     tipoGenero *novoGenero = (tipoGenero*) malloc(sizeof(tipoGenero));
     if (!novoGenero){ //Verifica se a memoria foi alocada
@@ -115,7 +119,7 @@ void cadastrarGenero (tipoLista *lista) {
     novoGenero->fim = NULL;
     lista->qntd++;
 
-    //Começa as verificações para o cadastro do genero:
+    //Começa as verificacoes para o cadastro do genero:
     //Caso a lista esteja vazia:
     if(!lista->inicio) {
         //Direciona os ponteiros corretamente
@@ -137,21 +141,21 @@ void cadastrarGenero (tipoLista *lista) {
     printf("Genero inserido! \n");
 }
 
-void generosCadastrados(tipoLista *lista){ /* Sendo passado a lista de gêneros como argumento */
-    tipoGenero* aux = lista->inicio; /* Aux apontando para o primeiro gênero */
-    if(!aux){ /* Caso não encontre, essa lista está vazia */
+void generosCadastrados(tipoLista *lista){ /* Sendo passado a lista de generos como argumento */
+    tipoGenero* aux = lista->inicio; /* Aux apontando para o primeiro genero*/
+    if(!aux){ /* Caso nao encontre, essa lista esta vazia */
         printf("Lista vazia!");
         return ;
     }
     printf("Generos disponiveis\n");
-    while(aux){ /* Enquanto aux é diferente de nulo, printe e passe para o próx. */
+    while(aux){ /* Enquanto aux e diferente de nulo, printe e passe para o prox. */
         printf("%s\n", aux->nomeGenero);
-        aux = aux->prox; /* associa o aux ao próximo */
+        aux = aux->prox; /* associa o aux ao proximo */
     }
 }
 
 tipoGenero* pesquisaGenero(tipoLista *lista){
-    generosCadastrados(lista); /* Utiliza a função para printar todos os gêneros cadastrados*/
+    generosCadastrados(lista); /* Utiliza a funcao para printar todos os generos cadastrados*/
     char nomeG[50];
 
     printf("Digite um genero: \n");
@@ -160,14 +164,14 @@ tipoGenero* pesquisaGenero(tipoLista *lista){
 
     tipoGenero* atual = lista->inicio; /* Cria um tipoGenero e associa para o inicio da lista */
 
-    while(atual){ /* Roda caso o atual não seja NULL, ou seja, enquanto a lista contém algum elemento */
-        if(strcmp(nomeG, atual->nomeGenero) == 0) return atual; /* Caso o nome passado pelo usuário seja igual ao nome do gênero, retorne a lista desse gênero */
-        atual = atual->prox; /* Associa o atual para o próximo elemento */
+    while(atual){ /* Roda caso o atual nao seja NULL, ou seja, enquanto a lista contem algum elemento */
+        if(strcmp(nomeG, atual->nomeGenero) == 0) return atual; /* Caso o nome passado pelo usuario seja igual ao nome do genero, retorne a lista desse genero */
+        atual = atual->prox; /* Associa o atual para o proximo elemento */
     }
     return NULL;
 }
 
-/* Funções para filmes*/
+/* Funcoes para filmes*/
 void cadastrarFilme(tipoLista *lista){
     tipoGenero* genero = pesquisaGenero(lista);
 
@@ -177,7 +181,7 @@ void cadastrarFilme(tipoLista *lista){
     }
     
     tipoFilme *novoFilme = (tipoFilme*) malloc(sizeof(tipoFilme));
-    if (!novoFilme){ //Verifica se a memória foi alocada
+    if (!novoFilme){ //Verifica se a memoria foi alocada
         printf("Infelizmente, seu filme nao foi alocado de forma adequada. :(\n");
         return;
     }  
@@ -228,58 +232,58 @@ void exibirTodosFilmes(tipoLista *lista){
 }
 
 void exibirFilmesPorGenero(tipoLista *lista){ /* Recebe como argumento, a multilista principal */
-    tipoGenero* genero = pesquisaGenero(lista); /* Devolve a lista de filmes pertecentes ao gênero escolhido pelo usuário */
+    tipoGenero* genero = pesquisaGenero(lista); /* Devolve a lista de filmes pertecentes ao genero escolhido pelo usuario */
 
-    if(!genero){ /* Caso o gênero seja nulo, o algoritmo não encontrou o gênero passado */
+    if(!genero){ /* Caso o genero seja nulo, o algoritmo nao encontrou o genero passado */
         printf("Genero nao encontrado \n");
         return;
     }
 
-    if(genero->fim == NULL){ /* Caso a lista contém um fim igual a nulo, ele somente foi iniciado e não possui qualquer filme */
+    if(genero->fim == NULL){ /* Caso a lista contem um fim igual a nulo, ele somente foi iniciado e nao possui qualquer filme */
         printf("Nenhum filme cadastrado neste genero. \n");
         return;
     }
     
-    tipoFilme* atual = genero->fim->prox; /* Como essa lista é circular, é criado um ponteiro do tipoFilme em que o mesmo aponta ao elemento seguinte do fim dessa lista, ou seja, o inicio da lista.*/
+    tipoFilme* atual = genero->fim->prox; /* Como essa lista e circular, e criado um ponteiro do tipoFilme em que o mesmo aponta ao elemento seguinte do fim dessa lista, ou seja, o inicio da lista.*/
     
     printf("\nFilmes cadastrados do Genero %s: \n", genero->nomeGenero);
     do{
-        exibirFilme(atual); /* Simples função que recebendo um tipoFilme, printa o nome, sinopse, duração, tempo do filme e ano de lançamento utilizando a formatação padrão*/
+        exibirFilme(atual); /* Simples funcao que recebendo um tipoFilme, printa o nome, sinopse, duracao, tempo do filme e ano de lançamento utilizando a formatacao padrao*/
         atual = atual->prox;
-    }while(atual != genero->fim->prox); /* Caso o atual não seja o inicio da lista, continue no laço */
+    }while(atual != genero->fim->prox); /* Caso o atual nao seja o inicio da lista, continue no laço */
     printf("\n");
 }
 
 /* 
- * Função: removerFilme
- * Objetivo: Remove um filme do catálogo, buscando pelo nome informado.
+ * Funcao: removerFilme
+ * Objetivo: Remove um filme do catalogo, buscando pelo nome informado.
  * Parâmetros:
- *   - lista: no cabeça para a lista de gêneros, cada gênero contém uma lista de filmes.
+ *   - lista: no cabeça para a lista de generos, cada genero contem uma lista de filmes.
  */
 void removerFilme(tipoLista *lista){
-    // Exibe os filmes disponíveis no catálogo
+    // Exibe os filmes disponíveis no catalogo
     exibirTodosFilmes(lista);
 
-    // Lê o nome do filme a ser removido
+    // Le o nome do filme a ser removido
     char nomeBusca[50];
     printf("Digite o nome do filme: ");
     fgets(nomeBusca,sizeof(nomeBusca),stdin);
     limpaBufferInteligente(nomeBusca);
 
-    // Ponteiros para percorrer os gêneros e filmes
+    // Ponteiros para percorrer os generos e filmes
     tipoGenero  *atualG = lista->inicio; 
     tipoFilme   *atualF; 
     int         achou = 0;
 
-    // Percorre cada gênero na lista
+    // Percorre cada genero na lista
     for(int i = 0; i<lista->qntd; i++){ 
 
         // Começa pelo último filme cadastrado (lista circular)
         atualF = atualG->fim;
 
-         /* Percorre todos os filmes do gênero atual (atualG)
-          * Note que se o gênero estiver vazio, atualF = NULL,
-          * porém, nesse caso atualG->quantFilmes é igual a 0 e o for não será executado e não haverá falha de segmentação */
+         /* Percorre todos os filmes do genero atual (atualG)
+          * Note que se o genero estiver vazio, atualF = NULL,
+          * porem, nesse caso atualG->quantFilmes e igual a 0 e o for nao sera executado e nao havera falha de segmentacao */
         for(int j = 0; j<atualG->quantFilmes; j++){
             //Comparamos o nome do autalF->prox com o nome que buscamos
             if(strcmp(atualF->prox->nomeFilme, nomeBusca) == 0 ){
@@ -296,7 +300,7 @@ void removerFilme(tipoLista *lista){
         atualG = atualG->prox;
     }
 
-     // Caso o filme não tenha sido encontrado durante a busca
+     // Caso o filme nao tenha sido encontrado durante a busca
     if(!achou){
         printf("Filme nao encontrado\n");
         return;
@@ -308,9 +312,9 @@ void removerFilme(tipoLista *lista){
     // Remove o alvo da lista encadeada
     atualF->prox = alvo->prox;
     
-    // Ajusta o ponteiro 'fim' do gênero, se necessário
+    // Ajusta o ponteiro 'fim' do genero, se necessario
     if(alvo == alvo->prox){ 
-        // Era o único filme no gênero
+        // Era o único filme no genero
         atualG->fim = NULL;
     }else if(alvo == atualG->fim) {
         // Se removemos o último filme, atualizamos 'fim' para atualF
@@ -318,7 +322,7 @@ void removerFilme(tipoLista *lista){
     }
     
     atualG->quantFilmes--;
-     // Libera a memória do filme removido
+     // Libera a memoria do filme removido
     free(alvo);
 }
 
