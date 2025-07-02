@@ -15,7 +15,7 @@ int main(){
     inicializa(&lista);
     do{
         //limparTela();
-        printf("\n--------------\n Menu UFSflix\n--------------");
+        printf("\n--------------\n Menu UFSFlix\n--------------");
         printf("\n0 - Finalizar");
         printf("\n1 - Cadastrar Genero");
         printf("\n2 - Mostrar lista de generos cadastrados");

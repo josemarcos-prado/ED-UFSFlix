@@ -137,32 +137,32 @@ void cadastrarGenero (tipoLista *lista) {
     printf("Genero inserido! \n");
 }
 
-void generosCadastrados(tipoLista *lista){
-    tipoGenero* aux = lista->inicio;
-    if(!aux){
+void generosCadastrados(tipoLista *lista){ /* Sendo passado a lista de gêneros como argumento */
+    tipoGenero* aux = lista->inicio; /* Aux apontando para o primeiro gênero */
+    if(!aux){ /* Caso não encontre, essa lista está vazia */
         printf("Lista vazia!");
         return ;
     }
     printf("Generos disponiveis\n");
-    while(aux){
+    while(aux){ /* Enquanto aux é diferente de nulo, printe e passe para o próx. */
         printf("%s\n", aux->nomeGenero);
-        aux = aux->prox;
+        aux = aux->prox; /* associa o aux ao próximo */
     }
 }
 
 tipoGenero* pesquisaGenero(tipoLista *lista){
-    generosCadastrados(lista);
+    generosCadastrados(lista); /* Utiliza a função para printar todos os gêneros cadastrados*/
     char nomeG[50];
 
     printf("Digite um genero: \n");
-    fgets(nomeG,sizeof(nomeG),stdin);
+    fgets(nomeG,sizeof(nomeG),stdin); 
     limpaBufferInteligente(nomeG);
 
-    tipoGenero* atual = lista->inicio;
+    tipoGenero* atual = lista->inicio; /* Cria um tipoGenero e associa para o inicio da lista */
 
-    while(atual){
-        if(strcmp(nomeG, atual->nomeGenero) == 0) return atual;
-        atual = atual->prox;
+    while(atual){ /* Roda caso o atual não seja NULL, ou seja, enquanto a lista contém algum elemento */
+        if(strcmp(nomeG, atual->nomeGenero) == 0) return atual; /* Caso o nome passado pelo usuário seja igual ao nome do gênero, retorne a lista desse gênero */
+        atual = atual->prox; /* Associa o atual para o próximo elemento */
     }
     return NULL;
 }
@@ -227,26 +227,26 @@ void exibirTodosFilmes(tipoLista *lista){
     if(cont == 1) printf("Lista Vazia \n");
 }
 
-void exibirFilmesPorGenero(tipoLista *lista){
-    tipoGenero* genero = pesquisaGenero(lista);
+void exibirFilmesPorGenero(tipoLista *lista){ /* Recebe como argumento, a multilista principal */
+    tipoGenero* genero = pesquisaGenero(lista); /* Devolve a lista de filmes pertecentes ao gênero escolhido pelo usuário */
 
-    if(!genero){
+    if(!genero){ /* Caso o gênero seja nulo, o algoritmo não encontrou o gênero passado */
         printf("Genero nao encontrado \n");
         return;
     }
 
-    if(genero->fim == NULL){
+    if(genero->fim == NULL){ /* Caso a lista contém um fim igual a nulo, ele somente foi iniciado e não possui qualquer filme */
         printf("Nenhum filme cadastrado neste genero. \n");
         return;
     }
     
-    tipoFilme* atual = genero->fim->prox;
+    tipoFilme* atual = genero->fim->prox; /* Como essa lista é circular, é criado um ponteiro do tipoFilme em que o mesmo aponta ao elemento seguinte do fim dessa lista, ou seja, o inicio da lista.*/
     
     printf("\nFilmes cadastrados do Genero %s: \n", genero->nomeGenero);
     do{
-        exibirFilme(atual);
+        exibirFilme(atual); /* Simples função que recebendo um tipoFilme, printa o nome, sinopse, duração, tempo do filme e ano de lançamento utilizando a formatação padrão*/
         atual = atual->prox;
-    }while(atual != genero->fim->prox);
+    }while(atual != genero->fim->prox); /* Caso o atual não seja o inicio da lista, continue no laço */
     printf("\n");
 }
 
