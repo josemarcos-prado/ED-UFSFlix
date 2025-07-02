@@ -102,7 +102,7 @@ void inicializa(tipoLista *lista){
 void cadastrarGenero (tipoLista *lista) {
     tipoGenero *novoGenero = (tipoGenero*) malloc(sizeof(tipoGenero));
     if (!novoGenero){ //Verifica se a memoria foi alocada
-        printf("Infelizmente, seu genero nao foi alocado de forma adequada. :(\n");
+        printf("Infelizmente, seu genero nao foi alocado de forma adequada. \n");
         return;
     }
 
@@ -173,19 +173,23 @@ tipoGenero* pesquisaGenero(tipoLista *lista){
 
 /* Funcoes para filmes*/
 void cadastrarFilme(tipoLista *lista){
+    //Recebe o genero no qual o usuario quer cadastrar esse novo filme
     tipoGenero* genero = pesquisaGenero(lista);
-
+    
+    //Verifica se o genero existe
     if(!genero){
         printf("Genero nao encontrado!\n");
-        return;
+       return;
     }
     
+    //Aloca memoria para o novo filme
     tipoFilme *novoFilme = (tipoFilme*) malloc(sizeof(tipoFilme));
     if (!novoFilme){ //Verifica se a memoria foi alocada
-        printf("Infelizmente, seu filme nao foi alocado de forma adequada. :(\n");
+        printf("Infelizmente, seu filme nao foi alocado de forma adequada. \n");
         return;
     }  
-
+    
+    //Recebe os dados do filme
     printf("Digite o nome do filme: \n");
     fgets(novoFilme->nomeFilme,sizeof(novoFilme->nomeFilme),stdin);
     limpaBufferInteligente(novoFilme->nomeFilme);
@@ -202,32 +206,49 @@ void cadastrarFilme(tipoLista *lista){
     scanf("%d", &novoFilme->lancamento);
     getchar();
 
+    //Atualiza o tamanho da lista de filmes
     genero->quantFilmes++;
+
+    //Verifica se a lista e vazia
     if(!genero->fim){
+        //Faz com que o fim da lista seja o novo filme e faz ele apontar para ele mesmo
         genero->fim = novoFilme;
         novoFilme->prox = novoFilme;
         return;
     } 
+    
+    //Novo filme aponta para o inicio, o fim aponta para o novo filme e o novo 
     tipoFilme* aux = genero->fim;                                                                
     novoFilme->prox = aux->prox;
     aux->prox = novoFilme;
     genero->fim = novoFilme;
 }
-
+//Funcao para exibir todos os filmes disponíveis
 void exibirTodosFilmes(tipoLista *lista){
     printf("Filmes no Catalogo: \n");
+    //Ponteiros inicializados para percorrer a lista de filmes em generos
     tipoGenero *atualG = lista->inicio;
     tipoFilme *atualF;
+    
+    //Sinalizador
     int cont = 1;
+    
+    //Percorre todos os generos da lista
     for(int i = 0; i<lista->qntd; i++){
+
+        //A lista de filme comecara do ultimo filme do genero, é uma lista circular
         atualF = atualG->fim;
+        
+        //Percorre todos os filmes no genero atual
         for(int j = 0; j<atualG->quantFilmes; j++){
+
+            //Printa o nome de cada filme que o ponteiro passa
             printf("%d - %s \n", cont++, atualF->nomeFilme);
             atualF = atualF->prox;
         }
         atualG = atualG->prox;
     }
-
+    //Caso nao tenha achado nenhum filme
     if(cont == 1) printf("Lista Vazia \n");
 }
 
@@ -326,22 +347,39 @@ void removerFilme(tipoLista *lista){
     free(alvo);
 }
 
+//funcao que pesquisa filme especifico, pesquisa por nome
 void pesquisaFilme(tipoLista *lista){
     char nomeBusca[50];
+    
+    //Caso a lista nao tiver nenhum filme
     if(!lista){
         printf("Lista Vazia, filme nao encontrado");
         return;
     }
+    //Exibe todos os filmes 
     exibirTodosFilmes(lista);
+
+    //Le e armazena o nome do filme para busca-lo
     printf("Digite o nome do filme (exatamente igual): ");
     fgets(nomeBusca,sizeof(nomeBusca),stdin);
     limpaBufferInteligente(nomeBusca);
     
+    //Ponteiro para percorrer a lista de generos
     tipoGenero* atualGenero = lista -> inicio;
+
+    //Sinalizador
     int achou = 0;
+
+    //Percorre todos os generos da lista
     for (int i = 0; i < lista->qntd; i++) { 
-        tipoFilme* atualFilme = atualGenero->fim;        
+
+        //Ponteiro que aponta o para o ultimo filme do genero, lista circular
+        tipoFilme* atualFilme = atualGenero->fim;
+        
+        //Percorre todos os filmes da lista de generos
         for (int j = 0; j < atualGenero->quantFilmes; j++) {
+
+            //Compara a o nome dado pelo usuario com o nome do filme atual
             if (strcmp(atualFilme->nomeFilme, nomeBusca) == 0){
                 exibirFilme(atualFilme);
                 achou = 1;
@@ -351,6 +389,8 @@ void pesquisaFilme(tipoLista *lista){
         }
         atualGenero = atualGenero->prox;
     }
+
+    //Caso nao tenha achado o filme
     if(!achou) {
         printf("Nao achou o filme %s", nomeBusca);
     }
