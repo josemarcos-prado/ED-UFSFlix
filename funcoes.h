@@ -10,6 +10,7 @@ Sophia Damm Zogaib Mardones
 #include <stdlib.h>
 #include <string.h>
 
+//Tipo que define um no de lista circular (lista de filmes)
 typedef struct filme {
     char nomeFilme[50];
     char sinopse[300];
@@ -18,6 +19,7 @@ typedef struct filme {
     struct filme *prox; 
 } tipoFilme;
 
+//Tipo que define um no de lista duplamente encadeada (lista de generos) e nó cabeça de lista circular (lista de filmes)
 typedef struct genero{
     tipoFilme *fim;
     char nomeGenero[50];
@@ -26,6 +28,7 @@ typedef struct genero{
     struct genero *prox,*ant;
 }tipoGenero;
 
+//Tipo que define um no cabeca de lista duplamente encadeada (multilista)
 typedef struct tipoLista{
     int qntd;
     tipoGenero *inicio;
@@ -66,16 +69,21 @@ void pausar() {
     #endif
 }
 
+//Função que limpa o buffer
 void limpaBuffer(){
     int c;
     while(((c = getchar()) != '\n') && (c != EOF));
 }
 
+//Função que limpa: o buffer ou a formatação da string que foi recebida por um fgets
 void limpaBufferInteligente(char* string) {
-    if (strcspn(string, "\n") < strlen(string)){
-        string[strcspn(string,"\n")] = '\0';
+    //Se '\n' for encontrado na string, limpa a string
+    int i;
+    if ((i = strcspn(string, "\n")) < strlen(string)){ 
+        string[i] = '\0';
     } 
-    else {
+    //Se não, há lixo no buffer, que é removido pela função limpaBuffer()
+    else { 
         limpaBuffer();
     }
 }
@@ -86,13 +94,15 @@ void inicializa(tipoLista *lista){
     lista->qntd = 0;
 }
 
-/* Funções para gêneros */
+/* Funções para generos */
 void cadastrarGenero (tipoLista *lista) {
     tipoGenero *novoGenero = (tipoGenero*) malloc(sizeof(tipoGenero));
-    if (!novoGenero){ //Verifica se a memória foi alocada
+    if (!novoGenero){ //Verifica se a memoria foi alocada
         printf("Infelizmente, seu genero nao foi alocado de forma adequada. :(\n");
         return;
-    }  
+    }
+
+    //Recebe os dados do genero e inicializa os campos do struct com os valores devidos.  
     printf("Digite o nome do genero: \n");
     fgets(novoGenero->nomeGenero,sizeof(novoGenero->nomeGenero),stdin);
     limpaBufferInteligente(novoGenero->nomeGenero);
@@ -105,17 +115,24 @@ void cadastrarGenero (tipoLista *lista) {
     novoGenero->fim = NULL;
     lista->qntd++;
 
+    //Começa as verificações para o cadastro do genero:
+    //Caso a lista esteja vazia:
     if(!lista->inicio) {
-        novoGenero->prox = NULL;
-        novoGenero->ant = NULL;
+        //Direciona os ponteiros corretamente
+        novoGenero->prox = NULL; 
+        novoGenero->ant = NULL; 
+        //Adiciona no inicio
         lista->inicio = novoGenero;
         lista->fim = novoGenero;
         printf("Genero inserido! \n");
         return;
     }
+    //Caso a lista nao esteja vazia:
+    //Direciona os ponteiros corretamente
     novoGenero->prox = lista->inicio;
     lista->inicio->ant = novoGenero;
     novoGenero->ant = NULL;
+    //Adiciona no inicio
     lista->inicio = novoGenero;
     printf("Genero inserido! \n");
 }
